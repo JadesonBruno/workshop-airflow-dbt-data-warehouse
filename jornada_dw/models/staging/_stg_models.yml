@@ -83,3 +83,6 @@ models:
 
   - name: stg_cadastros_2
     description: "Teste"
+
+  - name: stg_luciano
+    description: "Teste Luciano"
