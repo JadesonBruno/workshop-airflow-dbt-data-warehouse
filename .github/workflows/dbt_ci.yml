@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12.1'
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.12.1'
 
       - name: Install dbt
         run: pip install dbt-core==1.9.4 dbt-postgres==1.9.0 dbt-redshift==1.9.0
