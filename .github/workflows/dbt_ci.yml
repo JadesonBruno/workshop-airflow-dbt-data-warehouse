@@ -5,12 +5,18 @@ on:
   push:
     branches:
       - main
+    workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.12.1'
+  PROJECT_DIR: "workshop-airflow-dbt"
 
 jobs:
   dbt-build:
     runs-on: self-hosted
 
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v4
 
       # - name: Setup Python
@@ -18,8 +24,23 @@ jobs:
       #   with:
       #     python-version: '3.12.1'
 
-      - name: Install dbt
-        run: pip install dbt-core==1.9.4 dbt-postgres==1.9.0 dbt-redshift==1.9.0
+      - name: Setup environment
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv init -)"
+
+          # Go to project directory
+          cd ~/data-projects/${{ env.PROJECT_DIR }}
+
+          # Validating Python version
+          python --version
+
+          # Activating virtual environment
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install --no-cache-dir dbt-core==1.9.4 dbt-postgres==1.9.0 dbt-redshift==1.9.0
 
       - name: Configure dbt profile
         run: |
@@ -41,10 +62,16 @@ jobs:
             target: prod    
           EOF
 
-      - name: dbt deps
+      - name: Run dbt
         working-directory: jornada_dw
-        run: dbt deps --profiles-dir ~/.dbt
+        run: |
+          # Ativating virtual environment
+          source ~/data-projects/${{ env.PROJECT_DIR }}/.venv/bin/activate
 
-      - name: dbt build
-        working-directory: jornada_dw
-        run: dbt build --profiles-dir ~/.dbt
+          # Validating versions
+          echo "Python: $(python --version)"
+          echo "dbt: $(dbt --version)"
+
+          # Running dbt commands
+          dbt deps --profiles-dir ~/.dbt
+          dbt build --profiles-dir ~/.dbt

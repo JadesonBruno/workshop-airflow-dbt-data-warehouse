@@ -1,4 +1,4 @@
 SELECT
     *
 FROM 
-    {{ ref('cadastros') }}
+    {{ ref('pedidos') }}
